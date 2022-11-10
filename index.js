@@ -7,7 +7,6 @@ const tinyDB = require('./lib/tinyDB');
 const mode = process.env.MODE || 'prod';
 const ssl = process.env.SSL || 'on';
 const SSL_MODE = ssl === 'off' ? false: true;
-// change doc-root, db-file path and attach dir in prod env
 const DOC_ROOT_PATH = mode === 'dev' ? 'D:/project/004.react/chatRcv/build' : '/node_project/chatRcv_docs';
 const certPath = path.join(__dirname, './ssl');
 
@@ -72,10 +71,14 @@ const attachHandler = (socket, io) => {
     })
 }
 
-const assetRouter = require('./routes/asset');
+const goChatRouter = require('./routes/goChat');
+global.chatMessages = [];
 
-app.use('/asset', assetRouter);
-app.use('/main', express.static(DOC_ROOT_PATH));
+app.set('DOC_ROOT_PATH', DOC_ROOT_PATH);
+app.set('io', io);
+
+app.use('/goChat', goChatRouter);
+app.use('/goChat/classifyPage', express.static(DOC_ROOT_PATH));
 
 expressServer.attachErrorHandleRouter(app);
 
