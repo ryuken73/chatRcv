@@ -82,7 +82,7 @@ app.set('io', io);
 const chkHeader = (req, res, next) => {
     console.log(req.headers);
     if(req.headers['from-sslproxy'] === 'true'){
-        res.send(401)
+        res.sendStatus(401)
         return;
     }
     next();
