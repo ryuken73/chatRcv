@@ -1,0 +1,37 @@
+{
+  "name": "bcast_server",
+  "version": "0.0.2",
+  "description": "simple broadcast server using socket.io(v4)",
+  "main": "index.js",
+  "author": "ryuken73 <ryuken73@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon ./index.js",
+    "build": "pkg . -t win -o ./build/touch_server"
+  },
+  "bin": "./index.js",
+  "pkg": {
+    "scripts": [
+      "lib/**/*"
+    ],
+    "assets": [
+      "public/**/*"
+    ]
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
+    "debounce-promise": "^3.1.2",
+    "express": "^4.17.1",
+    "helmet": "^4.6.0",
+    "http-errors": "^1.8.0",
+    "kafkajs": "^2.2.2",
+    "mkdirp": "^1.0.4",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.6.2",
+    "rotating-file-stream": "^2.1.5",
+    "socket.io": "^4.1.2",
+    "tracer": "^1.1.5"
+  }
+}
