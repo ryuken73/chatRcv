@@ -77,8 +77,18 @@ global.chatMessages = [];
 app.set('DOC_ROOT_PATH', DOC_ROOT_PATH);
 app.set('io', io);
 
+// requests from external network has headers 'from-sslproxy':true
+// prevent accessing classifyPage from external requests
+const chkHeader = (req, res, next) => {
+    console.log(req.headers);
+    if(req.headers['from-sslproxy'] === true){
+        res.send(401)
+        return;
+    }
+    next();
+}
 app.use('/goChat', goChatRouter);
-app.use('/goChat/classifyPage', express.static(DOC_ROOT_PATH));
+app.use('/goChat/classifyPage', chkHeader, express.static(DOC_ROOT_PATH));
 
 expressServer.attachErrorHandleRouter(app);
 

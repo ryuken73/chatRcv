@@ -39,6 +39,7 @@ router.post('/warn', (req, res, next) => {
 
 router.put('/classifyResult', async (req, res, next) => {
 	const { chatId, isError } = req.body;
+	console.log(req.headers)
 	const topic = 'goChatWarn';
 	const chat = global.chatMessages.find(chat => chat.chatId === chatId);
 	if(chat === undefined){
