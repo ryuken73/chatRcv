@@ -81,7 +81,7 @@ app.set('io', io);
 // prevent accessing classifyPage from external requests
 const chkHeader = (req, res, next) => {
     console.log(req.headers);
-    if(req.headers['from-sslproxy'] === true){
+    if(req.headers['from-sslproxy'] === 'true'){
         res.send(401)
         return;
     }
