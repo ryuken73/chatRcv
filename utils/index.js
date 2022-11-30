@@ -1,3 +1,5 @@
+const https = require('https');
+
 const number = {
     padZero(num){
         if(num < 10){
@@ -50,8 +52,48 @@ const date = {
     }
 }
 
+const getPgm = () => {
+    return new Promise((resolve, reject) => {
+        if(global.urlPgmId === null){
+            console.error('url to get pgmid is null. please set URL_FOR_PGMID env var!');
+            return;
+        }
+        console.log('execute periodic job: get pgmid');
+        const request = https.request(global.urlPgmId, (response) => {
+            let data = '';
+            response.on('data', chunk => data += chunk.toString());
+            response.on('end', () => {
+                const body = JSON.parse(data);
+                const pgmMap = makePgmMap(body);
+                resolve(pgmMap);
+            })
+        })
+        request.on('error', (error) => {
+            console.error(`error to request pgmid:${error.message}`);
+        });
+        request.end();
+    })
+}
+
+const makePgmMap = (data) => {
+    const pgmMap = new Map();
+    const channelIds = Object.keys(data);
+    channelIds.map(channelId => {
+       const pgms = data[channelId];
+       pgms.map(pgm => {
+           const key = `${channelId}-${pgm.PGM_ID}`;
+           const value = pgm.PGM_NM;
+           pgmMap.set(key, value);
+       })
+    })
+    console.log('size of PGM MAP is', pgmMap.size)
+    return pgmMap
+}
+
 module.exports = {
     clone,
     date,
     string,
+    getPgm,
+    makePgmMap
 }
