@@ -3,16 +3,27 @@ const expressServer = require('./lib/expressServer');
 const path = require('path');
 const fs = require('fs');
 const tinyDB = require('./lib/tinyDB');
+const scheduler = require('./lib/cronScheduler');
+const utils = require('./utils');
+const {getPgm} = utils;
+const {startSchedule} = scheduler;
 
 const mode = process.env.MODE || 'prod';
 const ssl = process.env.SSL || 'on';
 const SSL_MODE = ssl === 'off' ? false: true;
 const DOC_ROOT_PATH = mode === 'dev' ? 'D:/project/004.react/chatRcv/build' : '/node_project/chatRcv_docs';
+const URL_FOR_PGMID = process.env.URL_FOR_PGMID || null;
 const certPath = path.join(__dirname, './ssl');
 
 console.log('MODE =', mode);
 console.log('SSL_MODE =', SSL_MODE);
 console.log('DOC_ROOT_PATH =', DOC_ROOT_PATH);
+console.log('URL_FOR_PGMID =', URL_FOR_PGMID);
+
+
+global.urlPgmId = URL_FOR_PGMID;
+getPgm().then(result => global.pgmMap = result);
+startSchedule();
 
 const option = {
     publicDirectory: DOC_ROOT_PATH,
@@ -44,6 +55,7 @@ const ioOption = {cors: {origin: '*'}};
 const io = require('socket.io')(httpServer, ioOption);
 const {create, setLevel} = require('./lib/logger')();
 const logger = create({logFile:'chatRcv.log'});
+global.logger = logger;
 
 io.on('connection', socket =>{
     onConnect(socket);

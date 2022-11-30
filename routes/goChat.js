@@ -15,25 +15,31 @@ const mkKafkaMsg = message => {
 }
 
 router.post('/all', async (req, res, next) => {
-	const { chatId, ...chatBody } = req.body;
+	const { chatId, channelId, vodId, ...chatBody } = req.body;
+	const pgmKey = `${channelId}-${vodId}`;
+	const vodName = global.pgmMap.get(pgmKey);
 	const topic = 'goChat';
-	console.log('got message:', chatId, chatBody); 
+	console.log('got message:', chatId, vodName, chatBody); 
+	global.logger.info(`got message: ${chatId}, ${vodName} ${chatBody.text}`); 
 	// push to goChat kafka topic
 	const payloads = {
 		topic,
-		messages: mkKafkaMsg(req.body)
+		messages: mkKafkaMsg({...req.body, vodName})
 	}
 	const sendResult = await kafkaClient.sendMessage(producer, payloads);
-	console.log(sendResult);
+	// console.log(sendResult);
 	res.json({success:true});
 });
 
 router.post('/warn', (req, res, next) => {
-	const { chatId, ...chatBody } = req.body;
-	console.log('got message:', chatId, chatBody);
-	global.chatMessages.push(req.body);
+	const { chatId, channelId, vodId, ...chatBody } = req.body;
+	const pgmKey = `${channelId}-${vodId}`;
+	const vodName = global.pgmMap.get(pgmKey);
+	console.log('got message:', chatId, vodName, chatBody);
+	global.logger.info(`got warn message: ${chatId}, ${vodName} ${chatBody.text}`); 
+	global.chatMessages.push({...req.body, vodName});
 	// broadcast new warn message added using socket.io
-	console.log(global.chatMessages);
+	// console.log(global.chatMessages);
 	res.json({success:true});
 });
 
