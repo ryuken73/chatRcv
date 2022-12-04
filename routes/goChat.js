@@ -40,6 +40,8 @@ router.post('/warn', (req, res, next) => {
 	global.chatMessages.push({...req.body, vodName});
 	// broadcast new warn message added using socket.io
 	// console.log(global.chatMessages);
+	const rootNamespace = req.app.get('io').of('/');
+	rootNamespace.emit('newWarnMessage', {...req.body, vodName});
 	res.json({success:true});
 });
 
