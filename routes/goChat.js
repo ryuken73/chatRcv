@@ -43,6 +43,10 @@ router.post('/warn', (req, res, next) => {
 	res.json({success:true});
 });
 
+router.get('/warn', (req, res, next) => {
+	res.json(global.chatMessages);
+})
+
 router.put('/classifyResult', async (req, res, next) => {
 	const { chatId, isError } = req.body;
 	console.log(req.headers)
