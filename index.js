@@ -11,7 +11,7 @@ const {startSchedule} = scheduler;
 const mode = process.env.MODE || 'prod';
 const ssl = process.env.SSL || 'on';
 const SSL_MODE = ssl === 'off' ? false: true;
-const DOC_ROOT_PATH = mode === 'dev' ? 'D:/project/004.react/chatRcv/build' : '/node_project/chatRcv_docs/build';
+const DOC_ROOT_PATH = mode === 'dev' ? 'D:/project/004.react/chatRcv/build' : '/home/sbs/node_project/chatRcv_docs/build';
 const URL_FOR_PGMID = process.env.URL_FOR_PGMID || null;
 const certPath = path.join(__dirname, './ssl');
 
