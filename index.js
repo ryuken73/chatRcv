@@ -100,7 +100,7 @@ const chkHeader = (req, res, next) => {
     next();
 }
 app.use('/goChat', goChatRouter);
-app.use('/goChat/classifyPage', chkHeader, express.static(DOC_ROOT_PATH));
+app.use('/classify', chkHeader, express.static(DOC_ROOT_PATH));
 
 expressServer.attachErrorHandleRouter(app);
 
