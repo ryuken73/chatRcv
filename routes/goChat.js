@@ -64,6 +64,7 @@ router.put('/classifyResult', async (req, res, next) => {
 		messages: mkKafkaMsg(chat)
 	}
 	const sendResult = await kafkaClient.sendMessage(producer, payloads);
+	global.chatMessages = global.chatMessages.filter(chat => chat.chatId !== chatId);
 	console.log(sendResult);
 	res.json({success:true});
 });
