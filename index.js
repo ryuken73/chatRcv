@@ -13,6 +13,7 @@ const ssl = process.env.SSL || 'on';
 const SSL_MODE = ssl === 'off' ? false: true;
 const DOC_ROOT_PATH = mode === 'dev' ? 'D:/project/004.react/chatRcv/build' : '/home/sbs/node_project/chatRcv_docs/build';
 const URL_FOR_PGMID = process.env.URL_FOR_PGMID || null;
+const ELK_URL = 'http://elastic.sbs.co.kr:9200'
 const certPath = path.join(__dirname, './ssl');
 
 console.log('MODE =', mode);
@@ -24,6 +25,9 @@ console.log('URL_FOR_PGMID =', URL_FOR_PGMID);
 global.urlPgmId = URL_FOR_PGMID;
 getPgm().then(result => global.pgmMap = result);
 startSchedule();
+
+global.elkUrl = ELK_URL;
+global.goChatIndex = "sbs.radio-gorealra-chat";
 
 const option = {
     publicDirectory: DOC_ROOT_PATH,

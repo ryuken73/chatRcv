@@ -5,6 +5,9 @@ const kafkaClient = require('../lib/kafkaClient');
 const KAFKA_KEY = 'goChat_key1';
 const producer = kafkaClient.createProducer({});
 
+const utils = require('../utils')
+const {elkMethod} = utils;
+
 const mkKafkaMsg = message => {
 	return [
 		{
@@ -24,7 +27,7 @@ router.post('/all', async (req, res, next) => {
 	// push to goChat kafka topic
 	const payloads = {
 		topic,
-		messages: mkKafkaMsg({...req.body, vodName})
+		messages: mkKafkaMsg({...req.body, vodName, isError: false})
 	}
 	const sendResult = await kafkaClient.sendMessage(producer, payloads);
 	// console.log(sendResult);
@@ -50,6 +53,25 @@ router.get('/warn', (req, res, next) => {
 })
 
 router.put('/classifyResult', async (req, res, next) => {
+	const { chatId, isError } = req.body;
+	try {
+		const searchResult = await elkMethod.getDocIdfromChatId(chatId);
+		const success = await elkMethod.updateIsErrorById(searchResult._id, isError);
+		if(success){
+			global.chatMessages = global.chatMessages.filter(chat => chat.chatId !== chatId);
+			console.log(`update isError of chatId:${chatId} to ${isError} success!`);
+		} else {
+			console.log(`update isError of chatId:${chatId} to ${isError} failed!`);
+		}
+		res.json({success});
+	} catch (err) {
+		console.error(err);
+		console.log(`update isError of chatId:${chatId} to ${isError} failed!`);
+		res.json({success:false, msg:err});
+	}
+});
+
+router.put('/classifyResult_old', async (req, res, next) => {
 	const { chatId, isError } = req.body;
 	console.log(req.headers)
 	const topic = 'goChatWarn';

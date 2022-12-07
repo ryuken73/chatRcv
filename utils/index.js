@@ -1,4 +1,6 @@
 const https = require('https');
+const axios = require('axios');
+const { HTTPVersionNotSupported } = require('http-errors');
 
 const number = {
     padZero(num){
@@ -90,10 +92,72 @@ const makePgmMap = (data) => {
     return pgmMap
 }
 
+const elkMethod = {
+    getDocIdfromChatId: async (chatId) => {
+        return new Promise((resolve, reject) => {
+            const searchUrl = `${global.elkUrl}/${global.goChatIndex}/_search`;
+            const options  = {
+                data: {
+                    "query": {
+                        "term": {
+                            "chatId": chatId
+                        }
+                    },
+                    "_source": false
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            axios.get(searchUrl, options)
+            .then(response => {
+                const {hits} = response.data;
+                const searchCount = hits.hits.length;
+                if(searchCount > 0){
+                    resolve(hits.hits[0])
+                } else {
+                    reject(`no matching data for ${chatId}`);
+                }
+            })
+        })
+    },
+    updateIsErrorById: async (_id, isError) => {
+        return new Promise((resolve, reject) => {
+            const updateUrl = `${global.elkUrl}/${global.goChatIndex}/_update/${_id}`;
+            const options  = {
+                method: 'post',
+                data: {
+                    "script" : {
+                        "source": "ctx._source.isError = params.isError",
+                        "lang": "painless",
+                        "params" : {
+                        "isError" : isError
+                        }
+                    }
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+            axios(updateUrl, options)
+            .then(response => {
+                const {result} = response.data;
+                if(result === 'updated'){
+                    resolve(true);
+                } else {
+                    reject(`update isError failed for ${chatId}`);
+                }
+            })
+        })
+    }
+}
+
+
 module.exports = {
     clone,
     date,
     string,
     getPgm,
-    makePgmMap
+    makePgmMap,
+    elkMethod
 }
